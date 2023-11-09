@@ -1,0 +1,160 @@
+-- MariaDB dump 10.19  Distrib 10.4.28-MariaDB, for Win64 (AMD64)
+--
+-- Host: localhost    Database: dbtienda
+-- ------------------------------------------------------
+-- Server version	10.4.28-MariaDB
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `tbclientes`
+--
+
+DROP TABLE IF EXISTS `tbclientes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbclientes` (
+  `idCliente` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(40) DEFAULT NULL,
+  `apellido` varchar(40) DEFAULT NULL,
+  `direccion` varchar(45) DEFAULT NULL,
+  `telefono` varchar(15) DEFAULT NULL,
+  PRIMARY KEY (`idCliente`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbclientes`
+--
+
+LOCK TABLES `tbclientes` WRITE;
+/*!40000 ALTER TABLE `tbclientes` DISABLE KEYS */;
+INSERT INTO `tbclientes` VALUES (1,'Juan','Gómez','Calle A, Ciudad Imaginaria','123-456-7890'),(2,'María','López','Avenida B, Ciudad Ficticia','987-654-3210'),(3,'Pedro','Sánchez','Calle C, Pueblo Irreal','555-123-4567'),(4,'Ana','Martínez','Avenida D, Villa de la Imaginación','111-222-3333'),(5,'Carlos','Rodríguez','Calle E, Ciudad de los Sueños','999-888-7777');
+/*!40000 ALTER TABLE `tbclientes` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbdetallepedido`
+--
+
+DROP TABLE IF EXISTS `tbdetallepedido`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbdetallepedido` (
+  `idDetalle` int(11) NOT NULL AUTO_INCREMENT,
+  `idPedido` int(11) DEFAULT NULL,
+  `idProducto` int(11) DEFAULT NULL,
+  `idCliente` int(11) DEFAULT NULL,
+  `cantidad` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idDetalle`),
+  KEY `idCliente` (`idCliente`),
+  KEY `idPedido` (`idPedido`),
+  KEY `idProducto` (`idProducto`),
+  CONSTRAINT `tbdetallepedido_ibfk_1` FOREIGN KEY (`idCliente`) REFERENCES `tbclientes` (`idCliente`),
+  CONSTRAINT `tbdetallepedido_ibfk_2` FOREIGN KEY (`idPedido`) REFERENCES `tbpedidos` (`idPedido`),
+  CONSTRAINT `tbdetallepedido_ibfk_3` FOREIGN KEY (`idProducto`) REFERENCES `tbproductos` (`idProducto`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbdetallepedido`
+--
+
+LOCK TABLES `tbdetallepedido` WRITE;
+/*!40000 ALTER TABLE `tbdetallepedido` DISABLE KEYS */;
+INSERT INTO `tbdetallepedido` VALUES (1,1,1,3,2),(2,1,3,4,1),(3,2,2,5,3),(4,3,4,2,1),(5,4,5,1,2),(6,1,1,2,2);
+/*!40000 ALTER TABLE `tbdetallepedido` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = cp850 */ ;
+/*!50003 SET character_set_results = cp850 */ ;
+/*!50003 SET collation_connection  = cp850_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'NO_ZERO_IN_DATE,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER actualizarStock
+AFTER INSERT ON tbdetallePedido
+FOR EACH ROW
+BEGIN
+    UPDATE tbproductos
+    SET stock = stock - NEW.cantidad
+    WHERE idProducto = NEW.idProducto;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `tbpedidos`
+--
+
+DROP TABLE IF EXISTS `tbpedidos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbpedidos` (
+  `idPedido` int(11) NOT NULL AUTO_INCREMENT,
+  `descripcion` varchar(95) DEFAULT NULL,
+  PRIMARY KEY (`idPedido`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbpedidos`
+--
+
+LOCK TABLES `tbpedidos` WRITE;
+/*!40000 ALTER TABLE `tbpedidos` DISABLE KEYS */;
+INSERT INTO `tbpedidos` VALUES (1,'Pedido de productos de electrónica'),(2,'Pedido de productos de electrónica'),(3,'Pedido de productos de electrónica'),(4,'Pedido de productos de electrónica'),(5,'Pedido de productos de electrónica');
+/*!40000 ALTER TABLE `tbpedidos` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbproductos`
+--
+
+DROP TABLE IF EXISTS `tbproductos`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbproductos` (
+  `idProducto` int(11) NOT NULL AUTO_INCREMENT,
+  `nombrePro` varchar(35) DEFAULT NULL,
+  `Peso` decimal(10,2) DEFAULT NULL,
+  `Precio` decimal(10,2) DEFAULT NULL,
+  `Stock` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idProducto`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbproductos`
+--
+
+LOCK TABLES `tbproductos` WRITE;
+/*!40000 ALTER TABLE `tbproductos` DISABLE KEYS */;
+INSERT INTO `tbproductos` VALUES (1,'Smartphone X',0.20,699.99,48),(2,'Laptop Y',2.50,1299.99,32),(3,'Auriculares Z',0.10,99.99,100),(4,'Cámara Digital A',1.00,499.99,30),(5,'Teclado Mecánico B',0.80,89.99,50);
+/*!40000 ALTER TABLE `tbproductos` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2023-11-09 15:20:24
